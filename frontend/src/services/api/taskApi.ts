@@ -34,4 +34,5 @@ export const taskApi = {
   getTasks: () => api.get<Task[]>("/task"),
   addTask: (title: string) =>
     api.post<Task>("/task", { title }).then((res) => res),
+  deleteTask: (id: string) => api.delete(`/task/${id}`),
 };

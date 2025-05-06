@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useAddTask, useTask } from "../hooks/useTask";
+import { useAddTask, useDeleteTask, useTask } from "../hooks/useTask";
+import { useQueryClient } from "@tanstack/react-query";
 
 const TaskInput = ({
   onSave,
@@ -40,29 +41,51 @@ const TaskInput = ({
 const TaskList = ({
   tasks,
   isLoading,
+  onDelete,
 }: {
-  tasks: { id: string; title: string }[] | undefined;
+  tasks: { _id: string; title: string }[] | undefined;
   isLoading: boolean;
+  onDelete: (id: string) => void;
 }) => {
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <ul>
       {tasks?.map((task) => (
-        <li key={task.id} className="border-b py-2">
-          {task.title}
-        </li>
+        <div key={task._id}>
+          <li className="border-b py-2">{task.title}</li>
+          <button
+            onClick={() => onDelete(task._id)}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
       ))}
     </ul>
   );
 };
 
 const HomePage = () => {
+  const queryClient = useQueryClient();
   const { data: tasks, isLoading: isTasksLoading } = useTask();
   const addTaskMutation = useAddTask();
+  const deleteTaskMutation = useDeleteTask();
 
   const handleSave = (title: string) => {
-    addTaskMutation.mutate(title);
+    addTaskMutation.mutate(title, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      },
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    deleteTaskMutation.mutate(id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      },
+    });
   };
 
   return (
@@ -77,7 +100,11 @@ const HomePage = () => {
         />
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Saved Titles</h2>
-          <TaskList tasks={tasks} isLoading={isTasksLoading} />
+          <TaskList
+            tasks={tasks}
+            isLoading={isTasksLoading}
+            onDelete={handleDelete}
+          />
         </div>
       </div>
     </div>

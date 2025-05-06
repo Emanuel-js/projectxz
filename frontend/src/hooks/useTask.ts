@@ -10,3 +10,7 @@ export const useTask = () => {
 export const useAddTask = () => {
   return useMutation({ mutationFn: taskApi.addTask });
 };
+
+export const useDeleteTask = () => {
+  return useMutation({ mutationFn: taskApi.deleteTask });
+};
