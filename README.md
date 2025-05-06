@@ -1,8 +1,6 @@
 # 🧪 Fullstack Projectx - React + NestJS + MongoDB
 
-This is a full-stack monorepo boilerplate using **React (Vite)** on the frontend and **NestJS + MongoDB** on the backend, built with modern best practices and developer experience in mind.
-
----
+## This is a full-stack monorepo boilerplate using **React (Vite)** on the frontend and **NestJS + MongoDB** on the backend.
 
 ## 📦 Tech Stack
 
@@ -56,22 +54,40 @@ projectxz/
    npm run install:all
    ```
 
-3. Set up MongoDB:
+   if this doesn't work, try running `npm install` in the root directory and then `npm install` in the frontend and backend directories
 
-   - Install MongoDB locally or use MongoDB Atlas
-   - Update the `backend/.env` file with your MongoDB connection string
+3. create `backend/.env` file and add the following content:
 
-4. Seed the database with initial data:
+   ```PORT=3000
+   NODE_ENV=development
+   BASE_URL=http://localhost:3000
+   CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:5173,http://localhost:4200,http://localhost:5174
 
-   ```bash
-   npm run seed
+   MONGODB_URI=mongodb+srv://test:test@cluster0.cylq50p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+   JWT_SECRET=your_jwt_secret_key_change_in_production
+   JWT_EXPIRES_IN=7d
+
+   API_TITLE=Phishing Simulator API
+   API_DESCRIPTION=API Documentation for Phishing Simulator
+   API_VERSION=1.0
+   API_PATH=api
+
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_SECURE=false
+   EMAIL_USER=emanuelawol1960@gmail.com
+   EMAIL_PASS=orng rrdv gbxd jdjj
+   EMAIL_FROM_NAME=Phishing Simulator
    ```
 
-5. Start both frontend and backend:
+````
 
-   ```bash
-   npm run dev
-   ```
+5. Start both frontend and backend in root directory:
+
+```bash
+npm run dev
+````
 
 6. Open your browser:
    - Frontend: http://localhost:5173
@@ -79,8 +95,6 @@ projectxz/
    - API Documentation: http://localhost:3000/api/docs
 
 ## 👥 Default Users
-
-After running the seed script, the following users will be available:
 
 - Admin User:
 
