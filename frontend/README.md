@@ -1,54 +1,111 @@
-# React + TypeScript + Vite
+# Frontend Boilerplate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application boilerplate with TypeScript, React Router, Zustand, React Query, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **TypeScript**: Type-safe code
+- **React Router**: Client-side routing
+- **Zustand**: State management
+- **React Query**: Data fetching and caching
+- **Tailwind CSS**: Utility-first CSS framework
+- **Axios**: HTTP client
+- **Authentication**: Complete auth flow with protected routes
+- **Layout System**: Multiple layouts for different sections
+- **Error Handling**: Error boundary and API error handling
+- **Loading States**: Loading indicators and spinners
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```
+frontend/
+├── public/              # Static files
+├── src/
+│   ├── assets/          # Images, fonts, etc.
+│   ├── components/      # Reusable components
+│   ├── hooks/           # Custom hooks
+│   ├── layouts/         # Layout components
+│   ├── lib/             # Library configurations
+│   ├── pages/           # Page components
+│   ├── services/        # API services
+│   ├── store/           # Zustand stores
+│   ├── App.tsx          # Main App component
+│   ├── main.tsx         # Entry point
+│   └── index.css        # Global styles
+├── .env                 # Environment variables
+├── index.html           # HTML template
+├── package.json         # Dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
+└── vite.config.ts       # Vite configuration
+```
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file based on `.env.example`
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Available Scripts
+
+- `npm run dev`: Start the development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview the production build
+- `npm run lint`: Lint the code
+
+## Authentication
+
+The boilerplate includes a complete authentication system with:
+
+- Login
+- Registration
+- Protected routes
+- Token management
+- Persistent auth state
+
+## API Integration
+
+API calls are organized in the `services` directory and use Axios for HTTP requests. React Query is used for data fetching, caching, and synchronization.
+
+## State Management
+
+Zustand is used for global state management. The main store is in `src/store/authStore.tsx`.
+
+## Styling
+
+Tailwind CSS is used for styling. The configuration is in `tailwind.config.js`.
+
+## Deployment
+
+To build for production:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+## ESLint Configuration
+
+This project uses ESLint for code linting. The configuration is in `eslint.config.js`.
 
 ```js
 export default tseslint.config({
   extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
     ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
     ...tseslint.configs.stylisticTypeChecked,
   ],
   languageOptions: {
-    // other options...
     parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+});
 ```

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        code {
+            font-family: monospace;
+        }
+        .options {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct API Test</h1>
+    <p>This page tests the connection to the backend API without using React or Axios.</p>
+    
+    <div class="container">
+        <div class="options">
+            <label>
+                <input type="radio" name="method" value="fetch" checked> Use Fetch API
+            </label>
+            <label>
+                <input type="radio" name="method" value="xhr"> Use XMLHttpRequest
+            </label>
+        </div>
+        
+        <button id="testButton">Test API Connection</button>
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>Request Details</h2>
+        <pre><code>URL: http://localhost:3000/api/test
+Method: GET
+Headers: 
+  - Content-Type: application/json
+  - Accept: application/json</code></pre>
+    </div>
+
+    <script>
+        document.getElementById('testButton').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Loading...';
+            resultDiv.className = 'result';
+            
+            const method = document.querySelector('input[name="method"]:checked').value;
+            
+            if (method === 'fetch') {
+                // Use Fetch API
+                try {
+                    const response = await fetch('http://localhost:3000/api/test', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>Success! (Fetch API)</h3>
+                        <p><strong>Message:</strong> ${data.message}</p>
+                        <p><strong>Status:</strong> ${data.status}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        <h4>Raw Response:</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } catch (error) {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>Error (Fetch API)</h3>
+                        <p>${error.message}</p>
+                        <p>Check the console for more details.</p>
+                    `;
+                    console.error('API Error (Fetch):', error);
+                }
+            } else {
+                // Use XMLHttpRequest
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', 'http://localhost:3000/api/test', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('Accept', 'application/json');
+                
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            resultDiv.className = 'result success';
+                            resultDiv.innerHTML = `
+                                <h3>Success! (XMLHttpRequest)</h3>
+                                <p><strong>Message:</strong> ${data.message}</p>
+                                <p><strong>Status:</strong> ${data.status}</p>
+                                <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                                <h4>Raw Response:</h4>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            `;
+                        } catch (e) {
+                            resultDiv.className = 'result error';
+                            resultDiv.innerHTML = `
+                                <h3>Error parsing response (XMLHttpRequest)</h3>
+                                <p>${e.message}</p>
+                                <p>Raw response: ${xhr.responseText}</p>
+                            `;
+                        }
+                    } else {
+                        resultDiv.className = 'result error';
+                        resultDiv.innerHTML = `
+                            <h3>Error (XMLHttpRequest)</h3>
+                            <p>Status: ${xhr.status}</p>
+                            <p>Response: ${xhr.responseText}</p>
+                        `;
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>Network Error (XMLHttpRequest)</h3>
+                        <p>Could not connect to the server.</p>
+                    `;
+                    console.error('XHR Error:', xhr);
+                };
+                
+                xhr.send();
+            }
+        });
+    </script>
+</body>
+</html>
