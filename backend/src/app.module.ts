@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TaskModule } from './task/task.module';
+
 import { MongooseModule } from '@nestjs/mongoose';
+
+import { AppService } from './app.service';
+import { UsersModule } from './user/user.module';
+import { PhishingModule } from './phishing/phishing.module';
+import { MailModule } from './mail/mail.module';
+
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -12,8 +19,19 @@ import { MongooseModule } from '@nestjs/mongoose';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI!),
-    TaskModule,
+
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
+
+    UsersModule,
+    PhishingModule,
+    MailModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,34 +1,48 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Home, Mail, Settings, Shield, BarChart } from "lucide-react";
+import { Button } from "./ui/button";
+import { cn } from "../lib/utils";
 
 const Sidebar = () => {
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const links = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Phishing", href: "/phishing", icon: Mail },
+    { name: "Analytics", href: "/analytics", icon: BarChart },
+    { name: "Settings", href: "/settings", icon: Settings },
+  ];
+
   return (
-    <aside className="w-64 bg-gray-800 text-white p-4">
-      <div className="mb-8">
-        <h2 className="text-xl font-bold">Dashboard</h2>
+    <div className="flex h-full w-[240px] flex-col border-r bg-white">
+      <div className="flex h-16 items-center border-b px-6">
+        <Link to="/dashboard" className="flex items-center gap-2 font-semibold">
+          <Shield className="h-6 w-6" />
+          <span>PhishGuard</span>
+        </Link>
       </div>
-
-      <nav className="space-y-2">
-        <Link
-          to="/dashboard"
-          className="block px-4 py-2 rounded hover:bg-gray-700"
-        >
-          Overview
-        </Link>
-
-        <Link
-          to="/dashboard/profile"
-          className="block px-4 py-2 rounded hover:bg-gray-700"
-        >
-          Profile
-        </Link>
-        <Link
-          to="/dashboard/settings"
-          className="block px-4 py-2 rounded hover:bg-gray-700"
-        >
-          Settings
-        </Link>
-      </nav>
-    </aside>
+      <div className="flex-1 overflow-auto py-4">
+        <nav className="grid gap-1 px-2">
+          {links.map((link) => (
+            <Button
+              key={link.href}
+              variant={pathname === link.href ? "secondary" : "ghost"}
+              className={cn(
+                "justify-start",
+                pathname === link.href ? "bg-secondary" : ""
+              )}
+              asChild
+            >
+              <Link to={link.href}>
+                <link.icon className="mr-2 h-5 w-5" />
+                {link.name}
+              </Link>
+            </Button>
+          ))}
+        </nav>
+      </div>
+    </div>
   );
 };
 

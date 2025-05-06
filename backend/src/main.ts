@@ -16,12 +16,14 @@ async function bootstrap() {
   const apiPath = configService.get<string>('API_PATH') ?? 'api';
   app.setGlobalPrefix(apiPath);
 
+  // Configure CORS
+  const corsOrigins = configService.get<string>('CORS_ORIGINS') ?? '*';
   app.enableCors({
-    origin: '*', // Allow all origins
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type,Accept,Authorization',
+    origin: corsOrigins.split(','),
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Accept,Authorization,X-Requested-With',
     exposedHeaders: 'Content-Length,Content-Type',
-    credentials: false,
+    credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
@@ -47,19 +49,53 @@ async function bootstrap() {
     .setTitle(apiTitle)
     .setDescription(apiDescription)
     .setVersion(apiVersion)
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      description: 'Enter JWT token',
+      in: 'header',
+    })
+    .addServer(
+      `http://localhost:${process.env.PORT ?? configService.get<number>('PORT') ?? 3001}`,
+    )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`${apiPath}/docs`, app, document);
+  const document = SwaggerModule.createDocument(app, config, {
+    operationIdFactory: (_: string, methodKey: string) => methodKey,
+  });
+
+  SwaggerModule.setup(`${apiPath}/docs`, app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+      docExpansion: 'none',
+    },
+  });
 
   // Start the server
-  const port = configService.get<number>('PORT') ?? 3000;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}/${apiPath}`);
+  const port = process.env.PORT ?? configService.get<number>('PORT') ?? 3001;
+  await app.listen(port, '0.0.0.0');
+  const serverUrl = `http://localhost:${port}`;
+  console.log(`Application is running on: ${serverUrl}/${apiPath}`);
   console.log(
-    `Swagger documentation is available at: http://localhost:${port}/${apiPath}/docs`,
+    `Swagger documentation is available at: ${serverUrl}/${apiPath}/docs`,
   );
+
+  // Open the browser to the Swagger UI
+  try {
+    const { default: open } = await import('open');
+    await open(`${serverUrl}/${apiPath}/docs`);
+  } catch (_) {
+    console.log(
+      'Could not open browser automatically. Please open the URL manually.',
+    );
+  }
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error starting the application:', err);
+  process.exit(1);
+});

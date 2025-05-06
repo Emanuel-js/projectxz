@@ -1,14 +1,13 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-import HomePage from "./pages/HomePage";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-        <HomePage />
-      </div>
-
+      <RouterProvider router={router} />
+      <Toaster />
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </>
   );

@@ -23,7 +23,11 @@ export const axiosInstance = axios.create({
 // Request interceptor for API calls
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // No token needed for this simple test
+    // Add auth token to request if available
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error: AxiosError) => {

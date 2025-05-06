@@ -15,6 +15,7 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
+    "@nestjs/mapped-types": "*",
     "@nestjs/typeorm": "^11.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
